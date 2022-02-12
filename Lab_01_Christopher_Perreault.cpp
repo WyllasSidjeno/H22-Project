@@ -6,8 +6,8 @@
 #include "../TI/TI/cvm 21.h"
 
 // PRAGMA
-#pragma warning (disable:6031)		// valeur de retour ignorée '_getch'
-#pragma warning (disable:26812)		// type enum 'type-name' est non délimité. Préférez 'enum class' à 'enum' (enum.3)
+#pragma warning (disable:6031)		// valeur de retour ignorÃ©e '_getch'
+#pragma warning (disable:26812)		// type enum 'type-name' est non dÃ©limitÃ©. PrÃ©fÃ©rez 'enum class' Ã  'enum' (enum.3)
 
 using namespace std;
 
@@ -15,30 +15,30 @@ using namespace std;
 
 const size_t LIG = 8, COL = 12;											// lignes et colonnes du damier
 
-// POSITION DU DAMIER À LA CONSOLE
+// POSITION DU DAMIER Ã€ LA CONSOLE
 
-const size_t START_X = 10;												// x du coin supérieur gauche du damier dans la console
-const size_t START_Y = 5;												// y du coin supérieur gauche du damier dans la console
+const size_t START_X = 10;												// x du coin supÃ©rieur gauche du damier dans la console
+const size_t START_Y = 5;												// y du coin supÃ©rieur gauche du damier dans la console
 
-// CARACTÉRISTIQUES DES CASES À LA CONSOLE
+// CARACTÃ‰RISTIQUES DES CASES Ã€ LA CONSOLE
 
-const size_t CASE_X = 6;												// largeur d'une case à l'affichage, 2 minimum
-const size_t CASE_Y = 3;												// hauteur d'une case à l'affichage, 2 minimum
+const size_t CASE_X = 6;												// largeur d'une case Ã  l'affichage, 2 minimum
+const size_t CASE_Y = 3;												// hauteur d'une case Ã  l'affichage, 2 minimum
 
 const size_t SPACE_X = 2;												// nombres de colonnes vides entre les cases, 1 minimum
 const size_t SPACE_Y = 1;												// nombres de lignes vides entre les cases, 1 minimum
 
-const size_t DELTA_X = CASE_X + SPACE_X;								// saut d'une case à l'autre, sur l'axe des X
-const size_t DELTA_Y = CASE_Y + SPACE_Y;								// saut d'une case à l'autre, sur l'axe des Y
+const size_t DELTA_X = CASE_X + SPACE_X;								// saut d'une case Ã  l'autre, sur l'axe des X
+const size_t DELTA_Y = CASE_Y + SPACE_Y;								// saut d'une case Ã  l'autre, sur l'axe des Y
 
-// DIMENSION DE LA FENÊTRE
+// DIMENSION DE LA FENÃŠTRE
 
 const size_t WIN_X = 2 * START_X + (COL - 1) * DELTA_X + CASE_X;		// nombres de colonnes pour l'affichage d'une case
 const size_t WIN_Y = 2 * START_Y + (LIG - 1) * DELTA_Y + CASE_Y;		// nombres de lignes   pour l'affichage d'une case
 
 // COMMANDES
 
-enum class Arrowkeys						// Code ascii décimal des touches fléchées du clavier
+enum class Arrowkeys						// Code ascii dÃ©cimal des touches flÃ©chÃ©es du clavier
 {
 	up_left		= 71,
 	up			= 72,
@@ -54,7 +54,7 @@ using Ak = Arrowkeys;						// un alias plus concis
 
 // CASES, DAMIER ET TRANSFORMATIONS
 
-enum Case { CO, CS, CD, CF, CV };			// les différentes cases possibles: ordinaire, surprise, dollars, fragile, vide
+enum Case { CO, CS, CD, CF, CV };			// les diffÃ©rentes cases possibles: ordinaire, surprise, dollars, fragile, vide
 
 Case damier[LIG][COL] =						// le damier et ses cases initiales
 {
@@ -70,21 +70,21 @@ Case damier[LIG][COL] =						// le damier et ses cases initiales
 
 Case futur[5] = { CF, CD, CF, CV, CV };		// la liste des transformations possibles  --  ex: futur[CO] ==> CF
 
-// COOODONNÉE LOGIQUE D'UN DÉPLACEMENT 
+// COOODONNÃ‰E LOGIQUE D'UN DÃ‰PLACEMENT 
 
 struct LC									// ligne et colonne (l,c) d'une case du damier[l][c]
 {
 	size_t l, c;							// ligne: [0..LIG-1] -- colonne: [0..COL-1]
 };
 
-struct Move									// coordonnées des 2 cases impliquées dans un déplacement
+struct Move									// coordonnÃ©es des 2 cases impliquÃ©es dans un dÃ©placement
 {
 	LC from, to;
 };
 
 // AFFICHAGE DES CASES
 
-struct XY									// coordonnée graphique (x,y) d'une case dans la console
+struct XY									// coordonnÃ©e graphique (x,y) d'une case dans la console
 {
 	size_t x, y;
 };
@@ -115,33 +115,33 @@ char cursor[3][3] =							// informations pour l'affichage du curseur
 
 int main()
 {
-	setwsize(WIN_Y, WIN_X);								// redimensionner la fenêtre de la console
+	setwsize(WIN_Y, WIN_X);								// redimensionner la fenÃªtre de la console
 	show(true);											// afficher (oui/non) le trait d'affichage de la console
 
 	Move m;
-	m.to= m.from = { 0,0 };										// coordonnée logique {l,c} du curseur au départ du jeu
+	m.to= m.from = { 0,0 };										// coordonnÃ©e logique {l,c} du curseur au dÃ©part du jeu
 
 	/*
 		NOTE 1)
 
-			m.to = {?,?};								// déterminer la case d'arrivée du curseur avec la direction de la flèche demandée
+			m.to = {?,?};								// dÃ©terminer la case d'arrivÃ©e du curseur avec la direction de la flÃ¨che demandÃ©e
 
-			// ex: flèche droite ==>
+			// ex: flÃ¨che droite ==>
 
-			m.to.l = m.from.l;							// la ligne n'a pas changée
-			m.to.c = m.from.c + 1;						// déplacement d'une colonne vers la droite
+			m.to.l = m.from.l;							// la ligne n'a pas changÃ©e
+			m.to.c = m.from.c + 1;						// dÃ©placement d'une colonne vers la droite
 
 		NOTE 2)
 
-			if ( damier[m.from.l][m.from.c] == CD )		// pour vérifier de quelle case il s'agit dans le tableau damier
+			if ( damier[m.from.l][m.from.c] == CD )		// pour vÃ©rifier de quelle case il s'agit dans le tableau damier
 				...
 		NOTE 3)
 
-			Utilisez le calcul énoncé dans la spécification au point 10) pour retrouver la coordonnée graphique (x,y) d'une case à partir de sa coordonnée logique (l,c)
+			Utilisez le calcul Ã©noncÃ© dans la spÃ©cification au point 10) pour retrouver la coordonnÃ©e graphique (x,y) d'une case Ã  partir de sa coordonnÃ©e logique (l,c)
 
 		NOTE 4)
 
-			m.from = m.to;								// l'arrivée deviendra le départ du déplacement suivant
+			m.from = m.to;								// l'arrivÃ©e deviendra le dÃ©part du dÃ©placement suivant
 
 	*/
 
@@ -184,72 +184,29 @@ int main()
 				if (_kbhit())
 				{
 					c = _getch();
+					LC delta;
+					LC maybe_pos;
 					switch (Ak(c))
 					{
-					case Ak::up:
-						if ((damier[m.to.l - 1][m.to.c] != CV) && m.to.l != 0)
-						{
-							m.from.l = m.to.l, m.from.c = m.to.c;
-							--m.to.l;
-							encours = false;
-						}
-						break;
-					case Ak::left:
-						if ((damier[m.to.l][m.to.c - 1] != CV) && m.to.c != 0)
-						{
-							m.from.c = m.to.c, m.from.l = m.to.l;
-							--m.to.c;
-							encours = false;
-						}
-						break;
-					case Ak::right:	
-						if ((damier[m.to.l][m.to.c + 1] != CV) && m.to.c < COL -1)
-						{
-							m.from.c = m.to.c, m.from.l = m.to.l;
-							++m.to.c;
-							encours = false;
-						}break;
-					case Ak::down:
-						if ((damier[m.to.l + 1][m.to.c] != CV) && m.to.l < LIG - 1)
-						{
-							m.from.l = m.to.l, m.from.c = m.to.c;
-							++m.to.l;
-							encours = false;
-						}
-						break;
-					case Ak::up_left:
-						if ((damier[m.to.l - 1][m.to.c - 1] != CV) && (m.to.l != 0 && m.to.c != 0))
-						{
-							m.from.l = m.to.l, m.from.c = m.to.c;
-							--m.to.l, --m.to.c;
-							encours = false;
-						}
-						break;
-					case Ak::up_right:
-						if ((damier[m.to.l - 1][m.to.c + 1] != CV) && (m.to.l != 0 && m.to.c < COL - 1))
-						{
-							m.from.l = m.to.l, m.from.c = m.to.c;
-							--m.to.l, ++m.to.c;
-							encours = false;
-						}
-						break;
-					case Ak::down_left:
-						if ((damier[m.to.l + 1][m.to.c - 1] != CV) && (m.to.l < LIG - 1 && m.to.c != 0))
-						{
-							m.from.l = m.to.l, m.from.c = m.to.c;
-							++m.to.l, --m.to.c;
-							encours = false;
-						}
-						break;
-					case Ak::down_right:
-						if ((damier[m.to.l + 1][m.to.c + 1] != CV) && (m.to.l < LIG - 1 && m.to.c < COL - 1))
-						{
-							m.from.l = m.to.l, m.from.c = m.to.c;
-							++m.to.l, ++m.to.c;
-							encours = false;
-						}
-						break;
+						case Ak::up_left:    {delta.l = -1; delta.c = -1; break;}
+						case Ak::up:         {delta.l = -1; delta.c =  0; break;}
+						case Ak::up_right:   {delta.l = -1; delta.c =  1; break;}
+						case Ak::left:       {delta.l =  0; delta.c = -1; break;}
+						case Ak::right:      {delta.l =  0; delta.c =  1; break;}
+						case Ak::down_left:  {delta.l =  1; delta.c = -1; break;}
+						case Ak::down:       {delta.l =  1; delta.c =  0; break;}
+						case Ak::down_right: {delta.l =  1; delta.c =  1; break;}
 					}
+					m.from.l = m.to.l; m.from.c = m.to.c;
+					maybe_pos = {m.from.l + delta.l, m.from.c + delta.c};
+					//if (		DÃ©passePasLig()		 && 		DÃ©passePasCol()		)
+					if ((maybe_pos.l >= 0 && maybe_pos.l < LIG) && (maybe_pos.c >= 0 && maybe_pos.c < COL)):
+						//if (damierestpasCV())
+						if (damier[maybe_pos.l][maybe_pos.c] != CV):
+						{
+							m.to.l = maybe_pos.l; m.to.c = maybe_pos.c;
+							encours = false;
+						}
 				}
 			}
 		} while (encours);
