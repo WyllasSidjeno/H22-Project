@@ -100,7 +100,7 @@ Style map[5] =								// les style pour toutes les cases
 	{ Color::blu, '\xB2' },
 	{ Color::grn, '\x24' },					// ex: map[CD].color == Color::grn 
 	{ Color::pur, '\xB0' },
-	{ Color::blk, '\x00' }
+	{ Color::blk, ' '/*'\x00'*/}
 };
 
 // AFFICHAGE DU CURSEUR
@@ -169,7 +169,8 @@ int main()
 				cout << cursor[y][2];
 			}
 		}
-	}			//Affichage fin
+	}
+	//Fin de l'affichage du menu principal
 	
 	uint8_t c;
 	do
@@ -177,13 +178,13 @@ int main()
 		bool encours = true;
 		do
 		{
-			c = _getch();					// lire le premier code ascii du tampon
-			if (c == 0 || c == 224)			// vérifier s'il s'agit du code réservé. Si oui, il faut lire le code suivant
+			c = _getch();
+			if (c == 0 || c == 224)
 			{
-				if (_kbhit())				// soyons prudent tout de même !
+				if (_kbhit())
 				{
-					c = _getch();			// lire le code ascii suivant
-					switch (Ak(c))			// Ak(c) ==> convertir c en Ak
+					c = _getch();
+					switch (Ak(c))
 					{
 					case Ak::up:
 						if ((damier[m.to.l - 1][m.to.c] != CV) && m.to.l != 0)
@@ -217,7 +218,7 @@ int main()
 						}
 						break;
 					case Ak::up_left:
-						if ((damier[m.to.l - 1][m.to.c - 1] != CV) && (m.to.l != 0 || m.to.c != 0))
+						if ((damier[m.to.l - 1][m.to.c - 1] != CV) && (m.to.l != 0 && m.to.c != 0))
 						{
 							m.from.l = m.to.l, m.from.c = m.to.c;
 							--m.to.l, --m.to.c;
@@ -225,7 +226,7 @@ int main()
 						}
 						break;
 					case Ak::up_right:
-						if ((damier[m.to.l - 1][m.to.c + 1] != CV) && (m.to.l != 0 || m.to.c < COL - 1))
+						if ((damier[m.to.l - 1][m.to.c + 1] != CV) && (m.to.l != 0 && m.to.c < COL - 1))
 						{
 							m.from.l = m.to.l, m.from.c = m.to.c;
 							--m.to.l, ++m.to.c;
@@ -233,7 +234,7 @@ int main()
 						}
 						break;
 					case Ak::down_left:
-						if ((damier[m.to.l + 1][m.to.c - 1] != CV) && (m.to.l < LIG - 1 || m.to.c != 0))
+						if ((damier[m.to.l + 1][m.to.c - 1] != CV) && (m.to.l < LIG - 1 && m.to.c != 0))
 						{
 							m.from.l = m.to.l, m.from.c = m.to.c;
 							++m.to.l, --m.to.c;
@@ -241,7 +242,7 @@ int main()
 						}
 						break;
 					case Ak::down_right:
-						if ((damier[m.to.l + 1][m.to.c + 1] != CV) && (m.to.l < LIG - 1 || m.to.c < COL - 1))
+						if ((damier[m.to.l + 1][m.to.c + 1] != CV) && (m.to.l < LIG - 1 && m.to.c < COL - 1))
 						{
 							m.from.l = m.to.l, m.from.c = m.to.c;
 							++m.to.l, ++m.to.c;
@@ -270,11 +271,15 @@ int main()
 			for (size_t y = 0; y < CASE_Y; y++)
 			{
 				gotoxy(START_X + (DELTA_X * m.from.c), START_Y + y + (DELTA_Y * m.from.l));
-				setcolor(map[damier[m.from.l][m.from.c]].color);
+				setcolor(map[damier[m.from.l][m.from.c]].color), setfill(map[damier[m.to.l][m.to.c]]);
 
 				cout << setfill(map[damier[m.from.l][m.from.c]].c) << setw(CASE_X) << "";
 			}
 		}
+
+		damier[m.to.l][m.to.c] = futur[damier[m.to.l][m.to.c]];
+
+
 	} while (true);
 
 	_getch();
