@@ -112,40 +112,30 @@ char cursor[3][3] =							// informations pour l'affichage du curseur
 	{ '\xC8', '\xCD', '\xBC' }
 };
 
+int point$recolte = 0;
+int nombrededeplacementeffectue = 0;
+time_t temps;
 
 int main()
 {
-	setwsize(WIN_Y, WIN_X);								// redimensionner la fenêtre de la console
-	show(true);											// afficher (oui/non) le trait d'affichage de la console
+	temps = time(0);
+	setwsize(WIN_Y, WIN_X);									// redimensionner la fenêtre de la console
+	show(false);											// afficher (oui/non) le trait d'affichage de la console
 
 	Move m;
 	m.to= m.from = { 0,0 };										// coordonnée logique {l,c} du curseur au départ du jeu
 
-	/*
-		NOTE 1)
-
-			m.to = {?,?};								// déterminer la case d'arrivée du curseur avec la direction de la flèche demandée
-
-			// ex: flèche droite ==>
-
-			m.to.l = m.from.l;							// la ligne n'a pas changée
-			m.to.c = m.from.c + 1;						// déplacement d'une colonne vers la droite
-
-		NOTE 2)
-
-			if ( damier[m.from.l][m.from.c] == CD )		// pour vérifier de quelle case il s'agit dans le tableau damier
-				...
-		NOTE 3)
-
-			Utilisez le calcul énoncé dans la spécification au point 10) pour retrouver la coordonnée graphique (x,y) d'une case à partir de sa coordonnée logique (l,c)
-
-		NOTE 4)
-
-			m.from = m.to;								// l'arrivée deviendra le départ du déplacement suivant
-
-	*/
-
 	{
+		string titre = "D\220COUVREZ ET AMASSEZ 15 CASES $$$$";
+		gotoxy((WIN_X - titre.size()) / 2, 2);
+		cout << titre;
+
+		string point$ = "$$$$ :  0";
+		XY xy = { START_X + (DELTA_X * (COL - 1)), START_Y + (DELTA_Y * (LIG - 1)) };
+		gotoxy(xy.x + (CASE_X - (point$.size())), xy.y + (CASE_Y) + 1);
+		setcolor(Color::grn);
+		cout <<  point$;
+
 		{
 			for (size_t col = 0; col < COL; col++)
 				for (size_t lig = 0; lig < LIG; lig++)
@@ -171,11 +161,11 @@ int main()
 		}
 	}
 	//Fin de l'affichage du menu principal
-	
+	bool partieencours = true;
 	uint8_t c;
 	do
 	{	
-		bool encours = true;
+		bool déplacementencours = true;
 		do
 		{
 			c = _getch();
@@ -191,7 +181,7 @@ int main()
 						{
 							m.from.l = m.to.l, m.from.c = m.to.c;
 							--m.to.l;
-							encours = false;
+							déplacementencours = false;
 						}
 						break;
 					case Ak::left:
@@ -199,7 +189,7 @@ int main()
 						{
 							m.from.c = m.to.c, m.from.l = m.to.l;
 							--m.to.c;
-							encours = false;
+							déplacementencours = false;
 						}
 						break;
 					case Ak::right:	
@@ -207,14 +197,14 @@ int main()
 						{
 							m.from.c = m.to.c, m.from.l = m.to.l;
 							++m.to.c;
-							encours = false;
+							déplacementencours = false;
 						}break;
 					case Ak::down:
 						if ((damier[m.to.l + 1][m.to.c] != CV) && m.to.l < LIG - 1)
 						{
 							m.from.l = m.to.l, m.from.c = m.to.c;
 							++m.to.l;
-							encours = false;
+							déplacementencours = false;
 						}
 						break;
 					case Ak::up_left:
@@ -222,7 +212,7 @@ int main()
 						{
 							m.from.l = m.to.l, m.from.c = m.to.c;
 							--m.to.l, --m.to.c;
-							encours = false;
+							déplacementencours = false;
 						}
 						break;
 					case Ak::up_right:
@@ -230,7 +220,7 @@ int main()
 						{
 							m.from.l = m.to.l, m.from.c = m.to.c;
 							--m.to.l, ++m.to.c;
-							encours = false;
+							déplacementencours = false;
 						}
 						break;
 					case Ak::down_left:
@@ -238,7 +228,7 @@ int main()
 						{
 							m.from.l = m.to.l, m.from.c = m.to.c;
 							++m.to.l, --m.to.c;
-							encours = false;
+							déplacementencours = false;
 						}
 						break;
 					case Ak::down_right:
@@ -246,14 +236,29 @@ int main()
 						{
 							m.from.l = m.to.l, m.from.c = m.to.c;
 							++m.to.l, ++m.to.c;
-							encours = false;
+							déplacementencours = false;
 						}
 						break;
 					}
 				}
 			}
-		} while (encours);
+		} while (déplacementencours);
+		++nombrededeplacementeffectue;
 
+		setcolor(Color::yel);
+		gotoxy(START_X, START_Y + (DELTA_Y * LIG));
+		cout << "move: (" << m.from.l << "," << m.from.c << ")" << " --> " << "(" << m.to.l << "," << m.to.c << ")";
+
+
+		if (damier[m.to.l][m.to.c] == CD)
+		{
+			++point$recolte;
+			if (point$recolte == 15)
+				partieencours = false;
+		}
+
+		gotoxy(START_X + (DELTA_X * COL - 1) - 3, START_Y + (DELTA_Y * LIG - 1) + 1), setcolor(Color::grn);
+		cout << setw(2) << setfill(' ') << right << point$recolte;
 
 		{
 			setcolor(Color::yel);
@@ -279,8 +284,46 @@ int main()
 
 		damier[m.to.l][m.to.c] = futur[damier[m.to.l][m.to.c]];
 
+		{
+			int deplacementnonpossible = 0;
+			for (int lig = -1; lig <= 1; lig++)
+				for (int col = -1; col <= 1; col++)
+					if (!(lig == 0 && col == 0))
+					{
+						/*if (templ + lig < 0 || tempc + col < 0)
+							++deplacementnonpossible;*/
+						if ((m.to.l + lig) >= LIG || m.to.c + col >= COL)
+							++deplacementnonpossible;
+						else if (damier[m.to.l + lig][m.to.c + col] == CV)
+							++deplacementnonpossible;
+					}
 
-	} while (true);
+			if (deplacementnonpossible == 8)
+				partieencours = false;
+		}
+	} while (partieencours);
 
+	clrscr();
+
+	cout << setfill(' ') << left;
+	if (point$recolte == 15)
+	{
+		setcolor(Color::grn);
+		cout << endl <<
+			"Victoire !" << endl << endl << setw(28) <<
+			"  Total des points" << ": " << point$recolte << " sur un objectif de 15" << endl << endl <<
+			setw(28) << "  Total des d\202placements" << ": " << nombrededeplacementeffectue << endl << endl <<
+			setw(28) << "  Temps \202coul\202" << ": " << time(0) - temps << " sec";
+	}
+	else
+	{
+		setcolor(Color::red);
+		cout << endl <<
+			"\220CHEC !" << endl << endl << setw(28) <<
+			"  Total des points" << ": " << point$recolte << " sur un objectif de 15" << endl << endl <<
+			setw(28) << "  Total des d\202placements" << ": " << nombrededeplacementeffectue << endl << endl <<
+			setw(28) << "  Temps \202coul\202" << ": " << (time(0) - temps) << " sec";
+	}
 	_getch();
+
 }
